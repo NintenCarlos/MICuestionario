@@ -25,7 +25,7 @@ const QuestionsSchema = new Schema<IQuestion>({
   },
   questionnarieId: {
     type: Schema.Types.ObjectId,
-    ref: "questionnarie",
+    ref: "questionnaries",
     required: true,
   },
 });
