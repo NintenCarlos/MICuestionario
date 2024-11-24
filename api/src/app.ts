@@ -11,4 +11,7 @@ app.get("/", (_req:Request, res:Response)=>{
     res.send("Hola desde mi servidor con TS")
 })
 
+//Incompleto
+app.post('')
+
 export default app;

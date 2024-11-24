@@ -1,5 +1,6 @@
 import app from "./app";
 import mongoose from "mongoose";
+import { RegisterUsers } from "./Controllers/UserController";
 
 async function main() {
   try {
@@ -12,5 +13,7 @@ async function main() {
     console.log("Algo salió mal :/", error);
   }
 }
+
+app.post('./users/create', RegisterUsers)
 
 main();
