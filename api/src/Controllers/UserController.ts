@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserModel } from "../Models/UsersModel";
+import jwt from "jsonwebtoken";
 
 export const RegisterUsers = async (
   req: Request,
@@ -36,7 +37,7 @@ export const RegisterUsers = async (
       return;
     }
 
-    await UserModel.create({
+    const user = await UserModel.create({
       name,
       lastNames,
       email,
@@ -44,8 +45,11 @@ export const RegisterUsers = async (
       rol,
     });
 
+    const token = jwt.sign(JSON.stringify(user), "Pollos Violados");
+
     res.status(200).json({
       msg: "Usuario registrado con éxtio.",
+      token,
     });
     return;
   } catch (error) {
@@ -54,5 +58,33 @@ export const RegisterUsers = async (
       msg: "Hubo un error al crear el usuario",
     });
     return;
+  }
+};
+
+export const signIn = async (req: Request, res: Response): Promise<void> => {
+  //Correo y contraseña
+  const email = req.body.email;
+  const password = req.body.password;
+
+  //Verificar si el usuario existe
+  const user = await UserModel.findOne({
+    email: req.body.email,
+    password: req.body.password,
+  });
+
+  //Verifica que no esté el usuario.
+  if (!user) {
+    res.status(400).json({
+      msg: "El usuario no está registrado en la base de datos.",
+    });
+  }
+   //Token
+  const token = jwt.sign(JSON.stringify(user), "Pollos Violados");
+
+  //Verifica que si está el usuario
+  if (user) {
+    res.status(200).json({
+      msg: "El usuario está en la base de datos.", token
+    });
   }
 };
