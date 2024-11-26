@@ -62,10 +62,6 @@ export const RegisterUsers = async (
 };
 
 export const signIn = async (req: Request, res: Response): Promise<void> => {
-  //Correo y contraseña
-  const email = req.body.email;
-  const password = req.body.password;
-
   //Verificar si el usuario existe
   const user = await UserModel.findOne({
     email: req.body.email,
@@ -73,18 +69,27 @@ export const signIn = async (req: Request, res: Response): Promise<void> => {
   });
 
   //Verifica que no esté el usuario.
-  if (!user) {
-    res.status(400).json({
-      msg: "El usuario no está registrado en la base de datos.",
-    });
-  }
-   //Token
-  const token = jwt.sign(JSON.stringify(user), "Pollos Violados");
+  try {
+    if (!user) {
+      res.status(400).json({
+        msg: "El usuario no está registrado en la base de datos.",
+      });
+    }
+    //Token
+    const token = jwt.sign(JSON.stringify(user), "Pollos Violados");
 
-  //Verifica que si está el usuario
-  if (user) {
-    res.status(200).json({
-      msg: "El usuario está en la base de datos.", token
+    //Verifica que si está el usuario
+    if (user) {
+      res.status(200).json({
+        msg: "El usuario está en la base de datos.",
+        token,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      msg: "Hubo un error al encontrar el usuario",
     });
+    return;
   }
 };
