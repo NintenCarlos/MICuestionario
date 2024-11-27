@@ -16,6 +16,6 @@ app.get("/", (_req: Request, res: Response) => {
 app.post("/users/create", RegisterUsers);
 
 //Verificar si el correo está disponible
-app.get("/users/get", signIn);
+app.post("/users/get", signIn);
 
 export default app;

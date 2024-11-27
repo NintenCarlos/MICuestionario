@@ -62,19 +62,23 @@ export const RegisterUsers = async (
 };
 
 export const signIn = async (req: Request, res: Response): Promise<void> => {
-  //Verificar si el usuario existe
-  const user = await UserModel.findOne({
-    email: req.body.email,
-    password: req.body.password,
-  });
+  //Verificar si los datos están correctos
+  const { email, password } = req.body;
+
+  if(!email || !password) {
+    res.status(400).json ({
+      msg: 'Los datos están incompletos'
+    })
+    return
+  }
 
   //Verifica que no esté el usuario.
   try {
-    if (!user) {
-      res.status(400).json({
-        msg: "El usuario no está registrado en la base de datos.",
-      });
-    }
+    const user = await UserModel.findOne({
+      email: req.body.email,
+      password: req.body.password,
+    });
+
     //Token
     const token = jwt.sign(JSON.stringify(user), "Pollos Violados");
 
@@ -83,6 +87,13 @@ export const signIn = async (req: Request, res: Response): Promise<void> => {
       res.status(200).json({
         msg: "El usuario está en la base de datos.",
         token,
+      });
+      return;
+    }
+
+    if (!user) {
+      res.status(400).json({
+        msg: "El usuario no está registrado en la base de datos.",
       });
     }
   } catch (error) {

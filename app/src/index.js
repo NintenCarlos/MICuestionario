@@ -47,9 +47,9 @@ const router = createBrowserRouter([
   },
 ]);
 const user = {
-  name:"Jesus",
-  logined:true,
-  rol:"client"
+  name: "Jesus",
+  logined: true,
+  rol: "client"
 };
 localStorage.user = JSON.stringify(user);
 
@@ -58,7 +58,7 @@ root.render(
   <React.StrictMode>
     <>
       {
-        user?.logined == true && (
+        user?.logined === true && (
           <Header />
         )
       }

@@ -1,20 +1,33 @@
+import axios from "axios";
 import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 
 const App = () => {
   const [data, setData] = useState({});
+  const navigate = useNavigate();
 
   const onChange = (e) => {
     e.preventDefault();
     const loginData = data;
     loginData[e.target.name] = e.target.value;
     setData(loginData)
+
+    console.log(loginData)
   }
 
-  const onSubmit = () => {
-    //Peticion a la DB
-    console.log(data)
+  const onSubmit = async () => {
+    try {
+      await axios.post('http://localhost:4000/users/get', {
+          email: data.email,
+          password: data.password
+      })
+      alert('Bien')
+      navigate('/home')
+    } catch (error) {
+      alert(`Error ${error}`)
+    }
   }
 
   return (

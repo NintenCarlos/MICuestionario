@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Card, Container, Form } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export const RegisterUser = () => {
     const [data, setData] = useState({});
@@ -15,11 +16,16 @@ export const RegisterUser = () => {
         console.log(nData)
     };
 
-    const onSubmit = () => {
-        /* Enviar data al server */
-        console.log(data)
-        navigate("/")
+    const onSubmit = async () => {
+        try {
+            data.rol = "client"
+            await axios.get('http://localhost:4000/users/create', data)
+            navigate("/")
+        } catch (error) {
+            alert('Ocurrió un error')
+        }
     }
+
     return (
         <Container>
             <Card>
@@ -32,7 +38,7 @@ export const RegisterUser = () => {
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Apellidos:</Form.Label>
-                            <Form.Control onChange={onChangeRegister} name="last_name" placeholder="Ingresa tu apellido" />
+                            <Form.Control onChange={onChangeRegister} name="lastNames" placeholder="Ingresa tu apellido" />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Correo:</Form.Label>
