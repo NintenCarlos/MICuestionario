@@ -19,12 +19,12 @@ const App = () => {
 
   const onSubmit = async () => {
     try {
-      await axios.post('http://localhost:4000/users/get', {
-          email: data.email,
-          password: data.password
-      })
-      alert('Bien')
-      navigate('/home')
+      const res = await axios.post('http://localhost:4000/users/get', data)
+      const user = res.data.user
+      user.logined = true
+      localStorage.user = JSON.stringify(user)
+      
+      navigate('/list-q')
     } catch (error) {
       alert(`Error ${error}`)
     }

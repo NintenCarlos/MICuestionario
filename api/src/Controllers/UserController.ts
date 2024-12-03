@@ -79,6 +79,7 @@ export const signIn = async (req: Request, res: Response): Promise<void> => {
       password: req.body.password,
     });
 
+ 
     //Token
     const token = jwt.sign(JSON.stringify(user), "Pollos Violados");
 
@@ -86,7 +87,7 @@ export const signIn = async (req: Request, res: Response): Promise<void> => {
     if (user) {
       res.status(200).json({
         msg: "El usuario está en la base de datos.",
-        token,
+        token, user
       });
       return;
     }

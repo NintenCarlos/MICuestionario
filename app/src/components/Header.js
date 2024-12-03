@@ -2,7 +2,7 @@ import React from 'react'
 import { Nav, Navbar } from 'react-bootstrap'
 
 export const Header = () => {
-    const user = JSON.parse(localStorage.user);
+    const user = localStorage.user ? JSON.parse(localStorage.user) : undefined;
 
     const logout = () => {
         localStorage.clear()
@@ -13,7 +13,7 @@ export const Header = () => {
         <Navbar bg="dark" data-bs-theme="dark" className='justify-content-center mb-3 bg-body-tertiary'>
             <Nav>
                 {
-                    user?.rol == "administrator" && (
+                    user?.rol === "administrator" && (
                         <>
                             <Nav.Item>
                                 <Nav.Link href='/home'>Home</Nav.Link>
@@ -29,7 +29,7 @@ export const Header = () => {
                     )
                 }
                 {
-                    user?.rol == "client" && (
+                    user?.rol === "client" && (
                         <Nav.Item>
                             <Nav.Link href='/list-q'>Home</Nav.Link>
                         </Nav.Item>

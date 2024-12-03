@@ -1,20 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { RecoverPassword } from './RecoverPassword';
-import { ListUsers } from './ListUsers';
-import { CreateQuestionnaire } from './CreateQuestionnaire';
-import { Header } from './components/Header';
-import { Dashboard } from './Dashboard';
-import { ShowQuestionnaires } from './ShowQuestionnaires';
-import { RegisterUser } from './RegisterUser';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { RecoverPassword } from "./RecoverPassword";
+import { ListUsers } from "./ListUsers";
+import { CreateQuestionnaire } from "./CreateQuestionnaire";
+import { Header } from "./components/Header";
+import { Dashboard } from "./Dashboard";
+import { ShowQuestionnaires } from "./ShowQuestionnaires";
+import { RegisterUser } from "./RegisterUser";
 
 const router = createBrowserRouter([
   {
@@ -42,26 +39,21 @@ const router = createBrowserRouter([
     element: <RegisterUser />,
   },
   {
-    path: "/create-questionnaires/:id",
+    path: "/update-questionnaires/:id",
+    element: <CreateQuestionnaire />,
+  },
+  {
+    path: "/create-questionnaire",
     element: <CreateQuestionnaire />,
   },
 ]);
-const user = {
-  name: "Jesus",
-  logined: true,
-  rol: "client"
-};
-localStorage.user = JSON.stringify(user);
+const user = localStorage.user ? JSON.parse(localStorage.user) : undefined;
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <>
-      {
-        user?.logined === true && (
-          <Header />
-        )
-      }
+      {user?.logined === true && <Header />}
       <RouterProvider router={router} />
     </>
   </React.StrictMode>

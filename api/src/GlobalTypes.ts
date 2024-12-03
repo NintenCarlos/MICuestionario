@@ -15,7 +15,7 @@ export interface IQuestion {
     title: string;
     type: "radio" | "checkbox" | "select" | "text";
     isMandatory: boolean;
-    questionnarieId: Schema.Types.ObjectId;
+    questionnaireId: Schema.Types.ObjectId;
   }
 
 export interface IUsers {

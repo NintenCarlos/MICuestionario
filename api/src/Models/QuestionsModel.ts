@@ -17,7 +17,7 @@ const QuestionsSchema = new Schema<IQuestion>({
     type: Boolean,
     required: true,
   },
-  questionnarieId: {
+  questionnaireId: {
     type: Schema.Types.ObjectId,
     ref: "questionnaries",
     required: true,
