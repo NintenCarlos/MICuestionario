@@ -1,152 +1,58 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
-import { QuestionnariesModel } from "../Models/QuestionnariesModel";
-import { UserModel } from "../Models/UsersModel";
-import jwt from "jsonwebtoken";
+import { IQuestionnarie } from "../GlobalTypes";
+import { QuestionsModel } from "../Models/QuestionsModel";
+import { OptionsModel } from "../Models/OptionsModel";
+import { QuestionnairesModel } from "../Models/QuestionnariesModel";
 
-export const createQuestionnarie = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { title, description, userId } = req.body;
 
-    //Verificar que los datos estén
-    if (!title || !description || !userId) {
-      res.status(400).json({
-        msg: "Faltan datos para crear el cuestionario.",
-      });
-      return;
+export const createQuizz = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const body = req.body;
+        if (!body.description || !body.title || !body.userId) {
+            res.status(400).json({ msg: "Faltan datos para crear un cuestionario" })
+        }
+        const questionnaire: IQuestionnarie = {
+            description: body.description,
+            title: body.title,
+            userId: body.userId
+        }
+
+        let isInvalidQuestion = false;
+        for (const question of body.questions) {
+            if (!question.title || !question.type || typeof question.isMandatory == "undefined") {
+                isInvalidQuestion = true;
+            }
+            if (question.options.length <= 0 || !question.options[0] || question.options[0].length <= 0) {
+                isInvalidQuestion = true
+            }
+        }
+
+        if (isInvalidQuestion) {
+            res.status(400).json({ msg: "Faltan datos para crear un cuestionario (en preguntas)" })
+            return
+        }
+        const createdQuestionnaire = await QuestionnairesModel.create(questionnaire);
+        for (const question of body.questions) {
+            const objQuestion = {
+                title: question.title,
+                type: question.type,
+                isMandatory: question.isMandatory,
+                questionnaireId: createdQuestionnaire._id
+            };
+            const createdQuestion = await QuestionsModel.create(objQuestion);
+            for (const option of question.options) {
+                const objOption = {
+                    title: option,
+                    questionId: createdQuestion._id
+                }
+                await OptionsModel.create(objOption);
+            }
+        }
+        res.status(200).json({ msg: "Cuestionario creado con exito" })
+        return
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Hubo un error al crear el cuestionario" })
+        return
     }
-
-    
-    //Verifica que el usuario si exista:
-    const ObjectId = mongoose.Types.ObjectId;
-    if (!ObjectId.isValid(userId)) {
-      res.status(400).json({
-        msg: "El ID no es válido.",
-      });
-      return;
-    }
-
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      res.status(400).json({
-        msg: "El usuario no existe.",
-      });
-      return;
-    }
-
-    const questionnarie = await QuestionnariesModel.create({
-      title,
-      description,
-      userId,
-    });
-
-    const token = jwt.sign(JSON.stringify(questionnarie), "Chino Huerta");
-
-    res.status(200).json({
-      msg: "El cuestionario fue creado con éxito.",
-      token,
-    });
-
-    //Error
-  } catch (error) {
-    res.status(500).json({
-      msg: "Algo salió mal. El programador no le sabe al chispop",
-    });
-  }
-};
-
-export const updateQuestionnaire = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { questionnaireId, title, description } = req.body;
-
-    if (!questionnaireId || !title || !description) {
-      res.status(400).json({
-        msg: "Completa todos los campos antes de actualizar.",
-      });
-    }
-
-    //Verifica que el cuestionario si exista:
-    const ObjectId = mongoose.Types.ObjectId;
-    if (!ObjectId.isValid(questionnaireId)) {
-      res.status(400).json({
-        msg: "El cuestionario no existe.",
-      });
-      return;
-    }
-
-    //Lo actualiza.
-    const updatedQuestionnarie = await QuestionnariesModel.findByIdAndUpdate(
-      questionnaireId,
-      { title, description }
-    );
-
-    const token = jwt.sign(
-      JSON.stringify(updatedQuestionnarie),
-      "Chino Huerta"
-    );
-
-    res.status(200).json({
-      msg: "El cuestionario fue actualizado",
-      token,
-    });
-
-    //Error
-  } catch (error) {
-    res.status(500).json({
-      msg: "Hubo un error al actualizar el cuestionario.",
-    });
-  }
-};
-
-export const deleteQuestionnarie = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { questionnaireId } = req.body;
-
-    if (!questionnaireId) {
-      res.status(400).json({
-        msg: "Ingresa el id del cuestionario para poderlo borrar.",
-      });
-    }
-
-    //Valida si es un ObjectId.
-    const ObjectId = mongoose.Types.ObjectId;
-    if (!ObjectId.isValid(questionnaireId)) {
-      res.status(400).json({
-        msg: "Hay un error con el id del cuestionario.",
-      });
-      return;
-    }
-
-    const deleteQuestionnarie = await QuestionnariesModel.findByIdAndDelete(
-      questionnaireId
-    );
-
-    //Si el cuestionario no existe.
-    if (!deleteQuestionnarie) {
-      res.status(400).json({
-        msg: "El cuestionario no existe.",
-      });
-      return;
-    }
-
-    const token = jwt.sign(JSON.stringify(deleteQuestionnarie), "Mazapán");
-
-    res.status(200).json({
-      msg: "El cuestionario ha sido eliminado.",
-      token,
-    });
-  } catch (error) {
-    res.status(500).json({
-      msg: "Hubo un error al momento de eliminar el cuestionario.",
-    });
-  }
-};
+}

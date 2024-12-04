@@ -17,4 +17,4 @@ const QuestionnarieSchema = new Schema<IQuestionnarie>({
     }
 });
 
-export const QuestionnariesModel = model('questionnaries', QuestionnarieSchema)
+export const QuestionnairesModel = model('questionnaries', QuestionnarieSchema)

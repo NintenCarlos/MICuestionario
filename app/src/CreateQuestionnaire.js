@@ -12,6 +12,8 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 import { AnwerQuestionnaire } from "./components/AnwerQuestionnaire";
+import axios from "axios";
+
 
 export const CreateQuestionnaire = () => {
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
@@ -27,6 +29,7 @@ export const CreateQuestionnaire = () => {
         isMandatory: false,
       },
     ],
+    userId: JSON.parse(localStorage.user)._id,
   });
 
   const onChangeTitle = (e) => {
@@ -74,8 +77,16 @@ export const CreateQuestionnaire = () => {
     setCreateQuestionnaire({ ...data });
   };
 
-  const sendData = () => {
-    console.log(createQuestionnaire);
+  const sendData = async () => {
+    try {
+      await axios.post(
+        "http://localhost:4000/questionnaire/create",
+        createQuestionnaire
+      );
+      alert("Cuestionario creado con exito");
+    } catch (error) {
+      alert("Todos tienen 10 por sonso yo >:C");
+    }
   };
 
   const onChangeOptionTitle = (e, iq, io) => {
@@ -99,7 +110,7 @@ export const CreateQuestionnaire = () => {
         <Card className="mb-3" border="primary">
           <Card.Body>
             <Card.Text className="text-end">
-              {createQuestionnaire.questions.length != 1 && (
+              {createQuestionnaire.questions.length !== 1 && (
                 <OverlayTrigger overlay={<Tooltip>Eliminar pregunta</Tooltip>}>
                   <CloseButton onClick={() => deleteQuestion(i)} />
                 </OverlayTrigger>
@@ -136,7 +147,7 @@ export const CreateQuestionnaire = () => {
                             value={o}
                             onChange={(e) => onChangeOptionTitle(e, i, io)}
                           />
-                          {q.options.length != 1 && (
+                          {q.options.length !== 1 && (
                             <Button
                               variant="outline-danger"
                               onClick={() => deleteOption(i, io)}
